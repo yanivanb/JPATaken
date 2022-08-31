@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
 
@@ -39,5 +40,20 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
         repository.create(artikel);
         assertThat(artikel.getId()).isPositive();
         assertThat(countRowsInTableWhere(ARTIKELS, "id=" + artikel.getId())).isOne();
+    }
+
+    @Test
+    void findByWoord(){
+        var artikels = repository.findByNaamContains("pp");
+        assertThat(artikels)
+                .hasSize(countRowsInTableWhere(ARTIKELS, "naam like '%"+"pp%'"))
+                .allSatisfy(artikel -> assertThat(artikel.getNaam().contains("pp")));
+    }
+
+    @Test
+    void artikelVerkoopOpslag(){
+        assertThat(repository.artikelVerkoopOpslag(BigDecimal.TEN))
+                .isEqualTo(countRowsInTable(ARTIKELS));
+        assertThat(countRowsInTableWhere(ARTIKELS, "verkoopprijs = 2.09 and id = 1")).isOne();
     }
 }
