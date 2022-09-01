@@ -1,6 +1,7 @@
 package be.vdab.jpataken.services;
 
 import be.vdab.jpataken.domain.Artikel;
+import be.vdab.jpataken.domain.NonFoodArtikel;
 import be.vdab.jpataken.exceptions.ArtikelNietGevondenException;
 import be.vdab.jpataken.repositories.ArtikelRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,7 @@ class ArtikelServiceTest {
     @BeforeEach
     void beforeEach(){
         service = new ArtikelService(repository);
-        artikel = new Artikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20));
+        artikel = new NonFoodArtikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20), 1);
     }
 
     @Test
