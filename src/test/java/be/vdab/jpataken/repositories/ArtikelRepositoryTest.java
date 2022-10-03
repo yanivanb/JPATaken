@@ -2,6 +2,7 @@ package be.vdab.jpataken.repositories;
 
 import be.vdab.jpataken.domain.Artikel;
 import be.vdab.jpataken.domain.FoodArtikel;
+import be.vdab.jpataken.domain.Korting;
 import be.vdab.jpataken.domain.NonFoodArtikel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,5 +103,13 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
         manager.flush();
         assertThat(countRowsInTableWhere(ARTIKELS,
                 "id = " + artikel.getId())).isOne();
+    }
+
+    @Test
+    void kortingenLezen() {
+        assertThat(repository.findById(idVanArtikelFood()))
+                .hasValueSatisfying(
+                        artikel -> assertThat(artikel.getKortingen())
+                                .containsOnly(new Korting(1,10.00)));
     }
 }

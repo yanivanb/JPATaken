@@ -1,7 +1,12 @@
 package be.vdab.jpataken.domain;
 
+import org.springframework.core.annotation.Order;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -16,17 +21,27 @@ public abstract class Artikel {
     private BigDecimal aankoopprijs;
     private BigDecimal verkoopprijs;
 
+    @ElementCollection
+    @CollectionTable(name = "kortingen",
+            joinColumns = @JoinColumn(name = "artikelId"))
+    @OrderBy("vanafAantal")
+    private Set<Korting> kortingen;
 
     public Artikel(String naam, BigDecimal aankoopprijs, BigDecimal verkoopprijs) {
         this.naam = naam;
         this.aankoopprijs = aankoopprijs;
         this.verkoopprijs = verkoopprijs;
+        this.kortingen = new LinkedHashSet<>();
     }
 
     protected Artikel(){}
 
     public long getId() {
         return id;
+    }
+
+    public Set<Korting> getKortingen() {
+        return Collections.unmodifiableSet(kortingen);
     }
 
     public String getNaam() {
