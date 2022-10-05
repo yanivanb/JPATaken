@@ -1,6 +1,7 @@
 package be.vdab.jpataken.services;
 
 import be.vdab.jpataken.domain.Artikel;
+import be.vdab.jpataken.domain.ArtikelGroep;
 import be.vdab.jpataken.domain.NonFoodArtikel;
 import be.vdab.jpataken.exceptions.ArtikelNietGevondenException;
 import be.vdab.jpataken.repositories.ArtikelRepository;
@@ -28,11 +29,13 @@ class ArtikelServiceTest {
     private ArtikelRepository repository;
 
     private Artikel artikel;
+    private ArtikelGroep artikelGroep1;
 
     @BeforeEach
     void beforeEach(){
+        artikelGroep1 = new ArtikelGroep("test");
         service = new ArtikelService(repository);
-        artikel = new NonFoodArtikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20), 1);
+        artikel = new NonFoodArtikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20), 1, artikelGroep1);
     }
 
     @Test

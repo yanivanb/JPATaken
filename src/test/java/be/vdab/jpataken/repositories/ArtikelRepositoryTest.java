@@ -1,9 +1,6 @@
 package be.vdab.jpataken.repositories;
 
-import be.vdab.jpataken.domain.Artikel;
-import be.vdab.jpataken.domain.FoodArtikel;
-import be.vdab.jpataken.domain.Korting;
-import be.vdab.jpataken.domain.NonFoodArtikel;
+import be.vdab.jpataken.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,6 +25,7 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
     private static final String ARTIKELS = "artikels";
 
     private Artikel artikel;
+    private ArtikelGroep artikelGroep1;
 
     public ArtikelRepositoryTest(ArtikelRepository repository, EntityManager manager) {
         this.repository = repository;
@@ -47,7 +45,8 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
 
     @BeforeEach
     void beforeEach() {
-        artikel = new NonFoodArtikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20), 1);
+        artikelGroep1 = new ArtikelGroep("test");
+        artikel = new NonFoodArtikel("KeukenPapier", BigDecimal.TEN, BigDecimal.valueOf(20), 1, artikelGroep1);
     }
 
     @Test
@@ -57,7 +56,9 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
 
     @Test
     void create() {
+        manager.persist(artikelGroep1);
         repository.create(artikel);
+        manager.flush();
         assertThat(artikel.getId()).isPositive();
         assertThat(countRowsInTableWhere(ARTIKELS, "id=" + artikel.getId())).isOne();
     }
@@ -89,7 +90,8 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
 
     @Test
     void createFoodArtikel() {
-        var artikel = new FoodArtikel("FoodArtikel2", BigDecimal.ONE, BigDecimal.TEN, 6);
+        var artikel = new FoodArtikel("FoodArtikel2", BigDecimal.ONE, BigDecimal.TEN, 6, artikelGroep1);
+        manager.persist(artikelGroep1);
         repository.create(artikel);
         manager.flush();
         assertThat(countRowsInTableWhere(ARTIKELS,
@@ -98,7 +100,8 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
 
     @Test
     void createNonFoodArtikel() {
-        var artikel = new NonFoodArtikel("NonFoodArtikel2", BigDecimal.ONE, BigDecimal.TEN, 3);
+        var artikel = new NonFoodArtikel("NonFoodArtikel2", BigDecimal.ONE, BigDecimal.TEN, 3, artikelGroep1);
+        manager.persist(artikelGroep1);
         repository.create(artikel);
         manager.flush();
         assertThat(countRowsInTableWhere(ARTIKELS,
@@ -112,4 +115,11 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
                         artikel -> assertThat(artikel.getKortingen())
                                 .containsOnly(new Korting(1,10.00)));
     }
+
+    @Test
+    void artikelGroepLazyLoaded() {
+        assertThat(repository.findById(idVanArtikelNonFood())).hasValueSatisfying(
+                artikel -> assertThat(artikel.getArtikelGroep().getNaam()).isEqualTo("groente"));
+    }
+
 }
