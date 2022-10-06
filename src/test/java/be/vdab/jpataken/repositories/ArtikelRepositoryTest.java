@@ -66,9 +66,15 @@ class ArtikelRepositoryTest  extends AbstractTransactionalJUnit4SpringContextTes
     @Test
     void findByWoord(){
         var artikels = repository.findByNaamContains("pp");
+        manager.clear();
         assertThat(artikels)
                 .hasSize(countRowsInTableWhere(ARTIKELS, "naam like '%"+"pp%'"))
-                .allSatisfy(artikel -> assertThat(artikel.getNaam().contains("pp")));
+                .extracting(Artikel::getNaam)
+                .allSatisfy(naam -> assertThat(naam).containsIgnoringCase("pp"));
+                assertThat(artikels)
+                .extracting(Artikel::getArtikelGroep)
+                .extracting(ArtikelGroep::getNaam)
+                .isNotNull();
     }
 
     @Test

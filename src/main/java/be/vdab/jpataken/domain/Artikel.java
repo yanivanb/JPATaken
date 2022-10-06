@@ -12,8 +12,8 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "artikels")
 @DiscriminatorColumn(name = "soort")
+@NamedEntityGraph(name = Artikel.MET_ARTIKELGROEP, attributeNodes = @NamedAttributeNode("artikelGroep"))
 public abstract class Artikel {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -26,7 +26,7 @@ public abstract class Artikel {
             joinColumns = @JoinColumn(name = "artikelId"))
     @OrderBy("vanafAantal")
     private Set<Korting> kortingen;
-
+    public static final String MET_ARTIKELGROEP = "Artikel.metArtikelgroep";
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "artikelgroepId")
     private ArtikelGroep artikelGroep;
